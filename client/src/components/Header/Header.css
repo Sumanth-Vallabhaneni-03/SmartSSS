@@ -1,0 +1,106 @@
+/* Header container */
+.header {
+    background: linear-gradient(to right,  #1a2b4d,#164f89);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1px 15px;
+    flex-wrap: nowrap; /* Ensure elements stay in one row */
+    position: relative;
+}
+
+/* Title Styling */
+.header h1 {
+    font-size: 1.6rem;
+    margin: 0;
+    flex: 1; /* Allows the title to take up available space */
+    color: white;
+}
+
+/* Navigation menu */
+.nav {
+    display: flex;
+    justify-content: flex-end;
+    flex: 3; /* Allows navigation links to share space */
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.nav-link {
+    padding: 5px 10px;
+    font-size: 1rem;
+    color: rgb(255, 255, 255);
+   
+    transition: font-size 0.2s ease;
+}
+
+/* Logo Styling */
+.logo-image {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgb(59, 57, 57);
+    border-radius: 50%;
+    box-shadow: 2px 3px 4px black;
+    margin-right: 10px;
+}
+
+/* Login Button Styling */
+.login-btn-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.login-btn-container button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-btn-container button:hover {
+    background-color: #0056b3;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .header {
+        padding: 5px 10px; /* Reduce padding for smaller screens */
+    }
+
+    .nav-link {
+        font-size: 0.9rem; /* Adjust font size for smaller screens */
+        padding: 5px 8px;
+    }
+
+    .logo-image {
+        width: 35px;
+        height: 35px;
+    }
+
+    .header h1 {
+        font-size: 1.2rem;
+    }
+
+    /* Hide all navigation items except Home on mobile */
+    .nav li:not(:first-child) {
+        display: none;
+    }
+
+    /* Optional: Adjust logo size for mobile */
+    .logo-image {
+        width: 30px;
+        height: 30px;
+    }
+
+    .header h1 {
+        font-size: 1.1rem; /* Slightly smaller font for home title */
+    }
+}
+

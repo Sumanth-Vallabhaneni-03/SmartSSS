@@ -1,0 +1,97 @@
+.mentor-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* You can adjust this depending on the section's height */
+  }
+  
+  .mentor-section .btn {
+    font-size: 18px;
+    padding: 10px 20px;
+  }
+  
+/* Main container */
+.stats-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+}
+
+
+/* Stats card styling */
+.stats-card {
+    background: #002b5c; /* Dark Blue */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 30px;
+    padding: 30px 50px;
+    width: 80%;
+    max-width: 1200px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Adding decorative shapes */
+.stats-card::before,
+.stats-card::after {
+    content: "";
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    transform: rotate(30deg);
+}
+
+.stats-card::before {
+    top: -20px;
+    left: -20px;
+}
+
+.stats-card::after {
+    bottom: -20px;
+    right: -20px;
+}
+
+/* Individual stat */
+.stat {
+    text-align: center;
+    color: white;
+    font-family: "Arial", sans-serif;
+}
+
+/* Animated number */
+.stat-number {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+/* Label */
+.stat p {
+    margin: 5px 0 0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.card
+{
+    box-shadow: 3px 2px 3px black;
+}
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .image-container img {
+      width: 100%; /* Full width on smaller screens */
+      height: auto; /* Maintain aspect ratio */
+    }
+  
+    .image-container .content {
+      width: 100%; /* Ensure content spans the full width */
+      padding: 15px; /* Adjust padding for mobile */
+      font-size:10px;
+    }
+  }
+  

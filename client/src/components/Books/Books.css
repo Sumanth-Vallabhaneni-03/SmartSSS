@@ -1,0 +1,109 @@
+.books-container {
+    text-align: center;
+    padding: 20px;
+    font-family: "Arial", sans-serif;
+  }
+  
+  h2 {
+    color: #222;
+    margin-bottom: 15px;
+  }
+  
+  .category-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .icon-container {
+    font-size: 2rem;
+    margin-bottom: 5px;
+  }
+  
+  .category-icon {
+    color: #222;
+    transition: color 0.3s;
+  }
+  
+  .tech-icon:hover {
+    color: #007bff;
+  }
+  
+  .casual-icon:hover {
+    color: #ff9800;
+  }
+  
+  .industry-icon:hover {
+    color: #4caf50;
+  }
+  
+  .lessons-icon:hover {
+    color: #673ab7;
+  }
+  
+  .motivation-icon:hover {
+    color: #e91e63;
+  }
+  
+  .category-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .category-image:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(7, 73, 128, 0.888);
+  }
+  
+  h3 {
+    color: rgb(13, 48, 86);
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .book-title {
+    font-weight: bold;
+    color: #0056b3;
+  }
+  
+  .book-title:hover {
+    color: #ff4500;
+  }
+  
+  .books-categories {
+    display: flex; /* This makes the container a flexbox */
+    flex-wrap: wrap; /* Allows wrapping of items if necessary */
+    justify-content: space-around; /* Evenly space items */
+    gap: 20px; /* Add space between cards */
+  }
+  
+  .book-category {
+    background: rgb(222, 230, 242);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 3px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    flex: 1 1 300px; /* Flex-grow, flex-shrink, and initial width */
+    min-width: 150px; /* Minimum width for responsiveness */
+    max-width: 450px; /* Max width to maintain card size */
+  }
+  
+  .book-category:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  

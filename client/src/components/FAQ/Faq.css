@@ -1,0 +1,87 @@
+/* Overall Accordion Styles */
+.accordion {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: visible !important; /* Ensuring content isn't hidden */
+}
+
+/* Card Header */
+.card-header {
+    background-color: #1a2b4d;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Accordion Item */
+.accordion-item {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: visible !important;
+}
+
+/* Accordion Button */
+.accordion-button {
+    font-size: 16px;
+    font-weight: normal;
+    text-align: left;
+    padding: 12px;
+    background-color: #f7f7f7;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.accordion-button:hover {
+    background-color: #e2e2e2;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+}
+
+/* Accordion Body */
+.accordion-body {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #007bff;
+    border-radius: 0 0 8px 8px;
+    color: black !important;
+    font-size: 15px;
+    
+    visibility: visible !important;
+}
+
+/* Hover Effect */
+.accordion-item:hover {
+    background-color: #fafafa;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .accordion {
+        width: 100%;
+        padding: 5px;
+    }
+
+    .card-header {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .accordion-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .accordion-body {
+        padding: 15px;
+    }
+}
