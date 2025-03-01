@@ -1,48 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
+import { userLoginContext } from './contexts/UserLoginStore'; // Import context
 import 'react-toastify/dist/ReactToastify.css';
 import "./Login.css";
 
 const Login = () => {
+  const { setCurrentUser } = useContext(userLoginContext); // Get context function
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
-    axios.post('http://localhost:3000/login', { email, password })
-      .then((result) => {
-        console.log(result.data);
-        if (result.data === "Success") {
-          toast.success("Login successful!"); 
-           // ✅ Delay redirection by 3 seconds (3000ms)
-           setTimeout(() => {
-            navigate('/dashboard'); 
-          }, 3000);
-        } else if (result.data === "User doesn't exist, please register to login!") {
-          toast.error("User does not exist! Please register."); 
-        } else {
-          toast.error("Incorrect password!"); 
-        }
-      })
-      .catch((err) => {
-        console.error("Login error:", err);
-        toast.error("An error occurred. Please try again.");
-      });
+
+    try {
+      const result = await axios.post("http://localhost:3000/login", { email, password });
+
+      if (result.data.token) {
+        localStorage.setItem("token", result.data.token);
+        setCurrentUser(result.data.user); // ✅ Store user in context
+        console.log(result.data.user);
+        toast.success("Login successful! Redirecting...");
+
+        setTimeout(() => navigate("/dashboard"), 2000);
+      } else {
+        toast.error(result.data.error || "Login failed!");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   return (
     <div className="login-container">
-      {/* ✅ Centered Toasts */}
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
-      
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <div className="form-group">
-          <label></label>
           <input
             type="email"
             className="form-control"
@@ -54,7 +51,6 @@ const Login = () => {
         </div>
 
         <div className="form-group">
-          <label></label>
           <input
             type="password"
             className="form-control"
@@ -70,15 +66,11 @@ const Login = () => {
         </button>
       </form>
 
-      {/* ✅ Signup Button */}
-      <br/>
-        <p>Don't have an account?</p>
-        <button 
-          className="btn btn-primary btn-block" 
-          onClick={() => navigate('/')}
-        >
-          Sign Up
-        </button>
+      <br />
+      <p>Don't have an account?</p>
+      <button className="btn btn-primary btn-block" onClick={() => navigate('/')}>
+        Sign Up
+      </button>
     </div>
   );
 };

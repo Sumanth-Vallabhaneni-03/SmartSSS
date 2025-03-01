@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "./Signup.css";
-import axios from 'axios'
-import {useNavigate} from "react-router-dom";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,8 @@ const Signup = () => {
     confirmPassword: "",
     termsAccepted: false,
   });
-  const navigate = useNavigate()
+
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
 
   const validate = () => {
@@ -44,15 +46,28 @@ const Signup = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios.post('http://localhost:3000/',formData)
-    .then(result => console.log(result))
-    navigate('/login')
+    if (!validate()) return;
+
+    try {
+      const result = await axios.post('http://localhost:3000/', formData);
+      console.log(result.data);
+      toast.success("Registration successful! Redirecting to login...");
+      
+      setTimeout(() => {
+        navigate('/login'); 
+      }, 2000);
+    } catch (err) {
+      console.error("Registration error:", err);
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   return (
     <section className="signup-section">
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
+      
       <div className="signup-container">
         <h1 className="signup-title">Sign up</h1>
         <form onSubmit={handleSubmit}>

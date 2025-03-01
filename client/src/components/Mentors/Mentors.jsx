@@ -1,100 +1,144 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { FaSearch } from "react-icons/fa";
 import "./Mentors.css";
+import { userLoginContext } from "../../contexts/UserLoginStore";
 
 const Mentors = () => {
   const [mentors, setMentors] = useState([]);
-  const [userId, setUserId] = useState(""); // Store logged-in user ID
-  const [requestedMentors, setRequestedMentors] = useState(new Set()); // Track requested mentors
+  const [requestedMentors, setRequestedMentors] = useState(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
+  const { currentUser } = useContext(userLoginContext);
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
-    // ✅ Get logged-in user ID from localStorage (or auth context)
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser && storedUser._id) {
-      setUserId(storedUser._id);
-    }
-
-    // ✅ Fetch mentors
     axios
       .get("http://localhost:3000/mentors")
       .then((response) => setMentors(response.data))
       .catch((error) => console.error("Error fetching mentors:", error));
   }, []);
 
-  // ✅ Send mentor request
-  const handleSendRequest = async (mentorId) => {
-    if (!userId) {
-      alert("Please log in first!");
+  useEffect(() => {
+    if (currentUser?.email) {
+      axios
+        .get(`http://localhost:3000/getUser?email=${currentUser.email}`)
+        .then((response) => {
+          setUserData(response.data);
+        })
+        .catch((error) => console.error("Error fetching user data:", error));
+    }
+  }, [currentUser]);
+
+  const handleSendRequest = async (mentor) => {
+    if (!currentUser || !currentUser.email) {
+      alert("Please log in to send a request.");
       return;
     }
 
+    const requestData = {
+      userId: currentUser._id,
+      name: currentUser.name,
+      email: currentUser.email,
+      phone: currentUser.phone || "",
+    };
+
     try {
-      const response = await axios.post("http://localhost:3000/send-request", {
-        senderId: userId,
-        receiverId: mentorId,
-      });
+      const response = await axios.post(
+        `http://localhost:3000/request-mentor/${mentor._id}`,
+        requestData
+      );
 
       alert(response.data.message);
-      setRequestedMentors((prev) => new Set(prev).add(mentorId)); // Track sent requests
+      setRequestedMentors((prev) => new Set([...prev, mentor._id]));
+      setMentors((prevMentors) =>
+        prevMentors.map((m) =>
+          m._id === mentor._id
+            ? { ...m, requests: [...(m.requests || []), requestData] }
+            : m
+        )
+      );
     } catch (error) {
       console.error("Error sending request:", error);
-      alert(error.response?.data?.message || "Failed to send request");
+      alert("Something went wrong while sending the request.");
+    }
+  };
+
+  const handleAcceptRequest = async (mentorId, userId) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/accept-request`,
+        { mentorId, userId }
+      );
+      alert(response.data.message);
+      setMentors((prevMentors) =>
+        prevMentors.map((mentor) =>
+          mentor._id === mentorId
+            ? {
+                ...mentor,
+                requests: mentor.requests.map((req) =>
+                  req.userId === userId ? { ...req, status: "Accepted" } : req
+                ),
+              }
+            : mentor
+        )
+      );
+    } catch (error) {
+      console.error("Error accepting request:", error);
+      alert("Failed to accept request.");
     }
   };
 
   return (
     <div className="container mt-2">
       <h2 className="text-center mb-4">Mentors</h2>
+      <div className="search-bar mb-4 text-center position-relative">
+        <input
+          type="text"
+          className="form-control w-50 mx-auto ps-4"
+          placeholder="Search by name or subject..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <FaSearch className="search-icon" />
+      </div>
+
       <div className="row">
         {mentors.map((mentor) => (
           <div key={mentor._id} className="col-md-4 mb-4">
             <div className="card shadow-lg">
-              <img
-                src={mentor.image}
-                alt={mentor.name}
-                className="card-img-top"
-                style={{ height: "200px", objectFit: "cover" }}
-              />
+              <img src={mentor.image} alt={mentor.name} className="card-img-top" style={{ height: "200px", objectFit: "cover" }} />
               <div className="card-body">
                 <h5 className="card-title">{mentor.name}</h5>
                 <p className="card-text"><strong>Subjects:</strong> {mentor.subjects}</p>
-                <p className="card-text"><strong>Phone Number:</strong> {mentor.number}</p>
-                <p className="card-text"><strong>Charge:</strong> ₹{mentor.charge}</p>
-
-                {/* ✅ Send Request */}
                 <button
-                  onClick={() => handleSendRequest(mentor._id)}
+                  onClick={() => handleSendRequest(mentor)}
                   className="btn btn-danger me-4"
                   disabled={requestedMentors.has(mentor._id)}
                 >
                   {requestedMentors.has(mentor._id) ? "Request Sent" : "Send Request"}
                 </button>
-
-                {/* ✅ Video Call Button (Google Meet) */}
-                <a
-                  href="https://meet.google.com/new"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary me-2"
-                >
-                  Video Call
-                </a>
-                <br /><br />
-
-                {/* ✅ Payment */}
-                <a href="" target="_blank" className="btn btn-primary me-4">
-                  Payment
-                </a>
-
-                {/* ✅ WhatsApp Call Button */}
-                <a
-                  href={`https://wa.me/${mentor.number}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-info"
-                >
-                  Call
-                </a>
+                <h6 className="mt-4">Requests Received:</h6>
+                {mentor.requests && mentor.requests.length > 0 ? (
+                  <ul className="list-group">
+                    {mentor.requests.map((request) => (
+                      <li key={request.userId} className="list-group-item">
+                        {request.name} ({request.email}) - {request.phone}
+                        {request.status === "Accepted" ? (
+                          <span className="text-success ms-2">(Accepted)</span>
+                        ) : (
+                          <button
+                            onClick={() => handleAcceptRequest(mentor._id, request.userId)}
+                            className="btn btn-success btn-sm ms-2"
+                          >
+                            Accept
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No requests yet.</p>
+                )}
               </div>
             </div>
           </div>

@@ -12,6 +12,8 @@ import Books from '../../components/Books/Books';
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap"; 
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { userLoginContext } from "../../contexts/UserLoginStore"; // Correct path
 
 
 function Home() {
@@ -70,7 +72,7 @@ function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/mentors", mentorData);
+      const response = await axios.post("http://localhost:3000/add-mentor", mentorData);
       alert(response.data.message);
       setShow(false);
       setMentorData({ name: "", image: "", subjects: "", charge: "" }); // Reset form
@@ -78,16 +80,50 @@ function Home() {
       alert("Error adding mentor: " + error.response?.data?.error);
     }
   };
+  const { currentUser } = useContext(userLoginContext);
+  const [isMentor, setIsMentor] = useState(false);
+
+  useEffect(() => {
+    const checkMentorStatus = async () => {
+      if (!currentUser) return; // Ensure currentUser exists before API call
+
+      try {
+        const response = await axios.get("http://localhost:3000/mentors"); // API to fetch mentors
+        const mentorList = response.data; // Assuming it returns an array of mentor names
+
+        setIsMentor(mentorList.includes(currentUser.name)); // Update mentor status
+      } catch (error) {
+        console.error("Error fetching mentors:", error);
+      }
+    };
+
+    checkMentorStatus();
+  }, [currentUser]);
 
   return (
 
     <div className="container mt-5">
       {/* ✅ Add Mentor Button */}
-      <div className="text-center mb-4">
-        <button className="btn btn-success" onClick={() => setShow(true)}>
-          <MdPersonAdd className="me-2" /> Add me as Mentor
+      <div>
+      <h5>{currentUser ? `Hi ${currentUser.name} 👋` : "Welcome Guest!"}</h5>
+      {currentUser && (
+        <button className="btn btn-success" onClick={() => navigate("/dashboard/profile")}>
+          View Profile
         </button>
-      </div>
+        
+      )}
+    </div>
+
+    <br />
+  {/* ✅ Add Mentor Button (Only if user is NOT a mentor) */}
+  {!isMentor && currentUser && (
+        <div className="text-center mb-4">
+          <button className="btn btn-success" onClick={() => setShow(true)}>
+            <MdPersonAdd className="me-2" /> Add me as Mentor
+          </button>
+        </div>
+      )}
+
 
       {/* ✅ Mentor Form Modal */}
       <Modal show={show} onHide={() => setShow(false)}>
@@ -245,11 +281,11 @@ function Home() {
       </div>
           <br /><br />   <br /><br />
       <div id="steps" className="text-center">
-        <h2 className="card-title" style={{ color: "rgb(30, 83, 136)" }}>Steps</h2>
-        <h3 className="card-text text-blue">What are the steps to Follow?</h3>
+        <h2 className="" style={{ color: "rgb(30, 83, 136)" }}>Steps</h2>
+        <h3 className="">What are the steps to Follow?</h3>
       </div>
           <br/>
-    <div className="card">
+    <div className="">
   <div className="gud">
     <img
       src={steps}

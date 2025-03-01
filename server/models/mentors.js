@@ -1,13 +1,21 @@
 const mongoose = require("mongoose");
 
 const MentorSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  image: { type: String, required: true },
-  subjects: { type: String, required: true },
-  charge: { type: Number, required: true },
-  number: { type: String, required: true }
-
+  name: String,
+  subjects: String,
+  number: String,
+  charge: Number,
+  image: String,
+  requests: [
+    {
+      userId: mongoose.Schema.Types.ObjectId,
+      name: String,
+      email: String,
+      phone: String,
+      status: { type: String, default: "Pending" }, // New field: "Pending" or "Accepted"
+    },
+  ],
 });
 
-const MentorModel = mongoose.model("mentors", MentorSchema);
-module.exports = MentorModel;
+const Mentor = mongoose.model("Mentor", MentorSchema);
+module.exports = Mentor;

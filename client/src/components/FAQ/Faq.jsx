@@ -19,7 +19,7 @@ function Faq() {
 
   return (
     <div className="accordion w-100" id="basicAccordion">
-      <div className="card">
+      <div className="">
         <div className="card-header">
         <h2 className="text-white">FAQs - SmartBridge - One:One Mentoring</h2>
         </div>

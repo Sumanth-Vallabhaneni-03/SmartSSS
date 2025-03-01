@@ -1,9 +1,11 @@
 require("dotenv").config();
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const UsersModel = require("./models/users");
-const MentorModel = require("./models/mentors");
+const Mentor = require("./models/mentors");
 
 const app = express();
 app.use(express.json());
@@ -13,102 +15,172 @@ const mongoURI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
 
 mongoose.connect(mongoURI)
-  .then(() => console.log("Connected to Smart database"))
-  .catch((err) => console.error("Database connection error:", err));
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ Database Error:", err));
 
 // ✅ LOGIN ROUTE
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+app.post("/login", async (req, res) => {  // 🔥 Corrected API route
+  try {
+    const { email, password } = req.body;
+    const user = await UsersModel.findOne({ email });
 
-  UsersModel.findOne({ email: email })
-    .then((user) => {
-      if (!user) {
-        return res.json("User doesn't exist, please register to login!");
-      }
-      if (user.password === password) {
-        return res.json("Success");
-      } else {
-        return res.json("The password is incorrect");
-      }
-    })
-    .catch((err) => res.status(500).json({ error: err.message }));
+    if (!user) return res.status(404).json({ error: "User doesn't exist, please register!" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ error: "Incorrect password" });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    return res.json({ message: "Login successful", token, user: { id: user._id, name: user.name, email: user.email } });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // ✅ REGISTER ROUTE
-app.post("/", async (req, res) => {
+app.post("/", async (req, res) => {  // 🔥 Changed from `/` to `/register`
   try {
-    const user = await UsersModel.create(req.body);
-    res.json(user);
+    const { password, ...otherDetails } = req.body;
+    if (!password) return res.status(400).json({ error: "Password is required" });
+
+    const hash_password = await bcrypt.hash(password, 10);
+    const user = await UsersModel.create({ ...otherDetails, password: hash_password });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    return res.json({ user, token });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: "Failed to register user" });
   }
 });
 
-// ✅ ADD MENTOR ROUTE
-app.post("/mentors", async (req, res) => {
-  try {
-    const mentor = await MentorModel.create(req.body);
-    res.json({ message: "Mentor added successfully!", mentor });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ✅ GET ALL MENTORS ROUTE
+// ✅ FETCH MENTORS
 app.get("/mentors", async (req, res) => {
   try {
-    const mentors = await MentorModel.find();
-    res.json(mentors);
+    const mentors = await Mentor.find();
+    return res.json(mentors);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: "Server error" });
   }
 });
+app.post("/request-mentor/:mentorId", async (req, res) => {
+  const { mentorId } = req.params;
+  const { userId, name, email, phone } = req.body;
 
-const MentorRequest = require("./models/mentorRequest"); // Import Model
-
-// ✅ SEND REQUEST
-app.post("/send-request", async (req, res) => {
   try {
-    const { senderId, receiverId } = req.body;
-    
-    // Check if request already exists
-    const existingRequest = await MentorRequest.findOne({ senderId, receiverId, status: "pending" });
-    if (existingRequest) return res.status(400).json({ message: "Request already sent" });
+    // 1️⃣ Find mentor in database
+    const mentor = await Mentor.findById(mentorId);
+    if (!mentor) {
+      return res.status(404).json({ message: "Mentor not found" });
+    }
 
-    const request = await MentorRequest.create({ senderId, receiverId });
-    res.status(201).json({ message: "Request sent successfully", request });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    // 2️⃣ Ensure requests field exists
+    if (!mentor.requests) {
+      mentor.requests = [];
+    }
+
+    // 3️⃣ Add new request
+    const newRequest = { userId, name, email, phone };
+    mentor.requests.push(newRequest);
+
+    // 4️⃣ Save updated mentor
+    await mentor.save();
+
+    res.json({ message: "Request sent successfully", mentor });
+  } catch (error) {
+    console.error("Error in /request-mentor:", error);
+    res.status(500).json({ message: "Server error", error });
   }
 });
 
-// ✅ ACCEPT REQUEST
-app.put("/accept-request/:requestId", async (req, res) => {
+// ✅ **API for Mentor to Accept a Request**
+app.post("/accept-request/:mentorId/:userId", async (req, res) => {
+  const { mentorId, userId } = req.params;
+
   try {
-    const { requestId } = req.params;
-    
-    const request = await MentorRequest.findByIdAndUpdate(requestId, { status: "accepted" }, { new: true });
-    if (!request) return res.status(404).json({ message: "Request not found" });
+    const mentor = await Mentor.findById(mentorId);
+    if (!mentor) {
+      return res.status(404).json({ message: "Mentor not found" });
+    }
 
-    res.json({ message: "Request accepted", request });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    // Find the request in mentor's requests array
+    const requestIndex = mentor.requests.findIndex((req) => req.userId.toString() === userId);
+
+    if (requestIndex === -1) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    // Update request status to "Accepted"
+    mentor.requests[requestIndex].status = "Accepted";
+
+    // Save the updated mentor
+    await mentor.save();
+
+    res.json({ message: "Request accepted successfully", mentor });
+  } catch (error) {
+    console.error("Error in /accept-request:", error);
+    res.status(500).json({ message: "Server error", error });
   }
 });
 
-// ✅ GET PENDING REQUESTS FOR MENTOR
-app.get("/requests/:mentorId", async (req, res) => {
+
+
+
+
+
+
+// ✅ UPDATE PROFILE
+app.put("/updateProfile", async (req, res) => {
   try {
-    const { mentorId } = req.params;
-    const requests = await MentorRequest.find({ receiverId: mentorId, status: "pending" }).populate("senderId", "name email");
+    const { email, name, phone, address, subjectsInterested } = req.body;
 
-    res.json({ count: requests.length, requests });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const user = await UsersModel.findOneAndUpdate(
+      { email }, // ✅ Finding the user by email
+      { name, phone, address, subjectsInterested },
+      { new: true }
+    );
+
+    if (!user) return res.status(404).json({ error: "User not found!" });
+
+    res.json({ message: "Profile updated!", user });
+  } catch (error) {
+    console.error("❌ Update Profile Error:", error);
+    res.status(500).json({ error: "Update failed!" });
+  }
+});
+
+// ✅ Fetch user data based on email
+app.get("/getUser", async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const user = await UsersModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user); // Send full user data
+  } catch (error) {
+    console.error("❌ Error fetching user data:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// ✅ ADD MENTOR
+app.post("/add-mentor", async (req, res) => {
+  console.log("Received Data:", req.body);  // Debugging step
+  try {
+      const mentor = new Mentor(req.body);
+      await mentor.save();
+      res.status(201).json({ message: "Mentor added successfully!" });
+  } catch (error) {
+      console.error("Error saving mentor:", error);
+      res.status(400).json({ error: error.message });
   }
 });
 
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+
+// ✅ SERVER START
+app.listen(port, () => console.log(`🚀 Server running on http://localhost:${port}`));

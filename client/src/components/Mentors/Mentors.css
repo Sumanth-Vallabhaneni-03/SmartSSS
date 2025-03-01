@@ -7,3 +7,24 @@
     display: block;
   }
   
+  .search-bar {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .search-bar .form-control {
+    padding-left: 40px; /* Add left padding to avoid overlap */
+    width: 50%;
+  }
+  
+  .search-icon {
+    position: absolute;
+    left: 25.5%; /* Adjust based on input field width */
+    top: 50%;
+    transform: translateY(-50%);
+    color: gray;
+    pointer-events: none; /* Prevent interaction */
+  }
+  
