@@ -9,6 +9,7 @@ import "./Home.css";
 import steps from "../../assets/steps.png";
 import  Faq from '../../components/FAQ/Faq';
 import Books from '../../components/Books/Books';
+import Notifications from "../../components/Notifications/Notifications";
 import axios from "axios";
 import { Modal, Button, Form } from "react-bootstrap"; 
 import { useNavigate } from "react-router-dom";
@@ -55,13 +56,6 @@ function Home() {
     boxShadow: hovered ? "0 4px 8px rgba(0, 0, 0, 0.2)" : "none"
   };
 
-  const [show, setShow] = useState(false);
-  const [mentorData, setMentorData] = useState({
-    name: "",
-    image: "",
-    subjects: "",
-    charge: ""
-  });
 
   // Handle input changes
   const handleChange = (e) => {
@@ -69,43 +63,48 @@ function Home() {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:3000/add-mentor", mentorData);
-      alert(response.data.message);
-      setShow(false);
-      setMentorData({ name: "", image: "", subjects: "", charge: "" }); // Reset form
-    } catch (error) {
-      alert("Error adding mentor: " + error.response?.data?.error);
-    }
-  };
   const { currentUser } = useContext(userLoginContext);
   const [isMentor, setIsMentor] = useState(false);
+  const [show, setShow] = useState(false);
+  const [mentorData, setMentorData] = useState({ name: "", image: "", subjects: "", charge: "",phone:"" });
 
   useEffect(() => {
     const checkMentorStatus = async () => {
-      if (!currentUser) return; // Ensure currentUser exists before API call
+      if (!currentUser) return; // Ensure user exists before API call
 
       try {
-        const response = await axios.get("http://localhost:3000/mentors"); // API to fetch mentors
-        const mentorList = response.data; // Assuming it returns an array of mentor names
-
-        setIsMentor(mentorList.includes(currentUser.name)); // Update mentor status
+        const response = await axios.get(`http://localhost:3000/check-mentor/${currentUser.name}`);
+        setIsMentor(response.data.isMentor);
       } catch (error) {
-        console.error("Error fetching mentors:", error);
+        console.error("Error checking mentor status:", error);
       }
     };
 
     checkMentorStatus();
   }, [currentUser]);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:3000/add-mentor", mentorData);
+      alert(response.data.message);
+      setShow(false);
+      setMentorData({ name: "", image: "", subjects: "", charge: "",phone:"" });
+      setIsMentor(true); // ✅ Hide button after adding
+    } catch (error) {
+      alert("Error adding mentor: " + error.response?.data?.error);
+    }
+  };
+
+
+
   return (
 
     <div className="container mt-5">
       {/* ✅ Add Mentor Button */}
       <div>
-      <h5>{currentUser ? `Hi ${currentUser.name} 👋` : "Welcome Guest!"}</h5>
+      <Notifications />
+      <h5>{currentUser ? `Hi ${currentUser.name} 👋` : "Welcome Guest!"}</h5> {/* Add the notification bell here */}
       {currentUser && (
         <button className="btn btn-success" onClick={() => navigate("/dashboard/profile")}>
           View Profile
@@ -115,8 +114,8 @@ function Home() {
     </div>
 
     <br />
-  {/* ✅ Add Mentor Button (Only if user is NOT a mentor) */}
-  {!isMentor && currentUser && (
+   {/* ✅ Add Mentor Button (Only if user is NOT a mentor) */}
+   {!isMentor && currentUser && (
         <div className="text-center mb-4">
           <button className="btn btn-success" onClick={() => setShow(true)}>
             <MdPersonAdd className="me-2" /> Add me as Mentor
@@ -164,8 +163,11 @@ function Home() {
         </Modal.Body>
       </Modal>
 
+      
+
       <div className="row">
         {/* Card 1 */}
+        
         <div className="col-sm-6">
           <div className="card-body text-start ">
             <h2 className="card-title text-start">

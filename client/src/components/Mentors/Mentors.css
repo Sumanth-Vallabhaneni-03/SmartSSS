@@ -1,30 +1,96 @@
+/* Profile Image Styling */
 .card-img-top {
-    width: 120px; /* Set a fixed width */
-    height: 120px; /* Set a fixed height */
-    object-fit: cover; /* Ensure proper cropping */
-    border-radius: 50%; /* Makes the image round */
-    margin: 10px auto; /* Centers the image */
-    display: block;
-  }
-  
-  .search-bar {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .search-bar .form-control {
-    padding-left: 40px; /* Add left padding to avoid overlap */
-    width: 50%;
-  }
-  
-  .search-icon {
-    position: absolute;
-    left: 25.5%; /* Adjust based on input field width */
-    top: 50%;
-    transform: translateY(-50%);
-    color: gray;
-    pointer-events: none; /* Prevent interaction */
-  }
-  
+  width: 80px; /* Smaller icon size */
+  height: 80px; /* Smaller icon size */
+  object-fit: cover;
+  border-radius: 50%; /* Circular shape */
+  margin: 10px auto;
+  display: block;
+}
+
+/* Search Bar */
+.search-bar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-bar .form-control {
+  padding-left: 35px; /* Adjust padding to fit small icon */
+  width: 50%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 25.5%; /* Adjust based on input field width */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px; /* Smaller icon */
+  color: gray;
+  pointer-events: none;
+}
+
+/* Common Button Styling */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 14px;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Video Call Button */
+.btn-video-call {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-video-call:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.video-call-icon {
+  font-size: 14px; /* Smaller icon */
+}
+
+/* Payment Button */
+.btn-payment {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-payment:hover {
+  background-color: #0056b3;
+}
+
+.payment-icon {
+  font-size: 14px; /* Smaller icon */
+}
+
+/* WhatsApp Chat Button */
+.btn-whatsapp {
+  background-color: #25d366;
+  color: white;
+}
+
+.btn-whatsapp:hover {
+  background-color: #1da851;
+}
+
+/* Request Button */
+.btn-request {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-request:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

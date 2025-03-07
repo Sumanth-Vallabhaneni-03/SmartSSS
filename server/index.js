@@ -63,6 +63,7 @@ app.get("/mentors", async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 });
+
 app.post("/request-mentor/:mentorId", async (req, res) => {
   const { mentorId } = req.params;
   const { userId, name, email, phone } = req.body;
@@ -93,40 +94,21 @@ app.post("/request-mentor/:mentorId", async (req, res) => {
   }
 });
 
-// ✅ **API for Mentor to Accept a Request**
-app.post("/accept-request/:mentorId/:userId", async (req, res) => {
-  const { mentorId, userId } = req.params;
 
+
+//notifications
+app.get("/notifications/:userName", async (req, res) => {
   try {
-    const mentor = await Mentor.findById(mentorId);
-    if (!mentor) {
-      return res.status(404).json({ message: "Mentor not found" });
+    const user = await UsersModel.findOne({ name: req.params.userName });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-
-    // Find the request in mentor's requests array
-    const requestIndex = mentor.requests.findIndex((req) => req.userId.toString() === userId);
-
-    if (requestIndex === -1) {
-      return res.status(404).json({ message: "Request not found" });
-    }
-
-    // Update request status to "Accepted"
-    mentor.requests[requestIndex].status = "Accepted";
-
-    // Save the updated mentor
-    await mentor.save();
-
-    res.json({ message: "Request accepted successfully", mentor });
+    res.json({ notifications: user.notifications });
   } catch (error) {
-    console.error("Error in /accept-request:", error);
-    res.status(500).json({ message: "Server error", error });
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
-
-
-
 
 
 // ✅ UPDATE PROFILE
@@ -179,6 +161,69 @@ app.post("/add-mentor", async (req, res) => {
       res.status(400).json({ error: error.message });
   }
 });
+
+app.get("/check-mentor/:userName", async (req, res) => {
+  const { userName } = req.params;
+
+  try {
+    // Check if the user exists as a mentor in the database
+    const mentor = await Mentor.findOne({ name: userName });
+
+    res.json({ isMentor: !!mentor }); // Returns true if mentor exists, otherwise false
+  } catch (error) {
+    console.error("Error in /check-mentor:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+app.post("/clear-notifications/:userName", async (req, res) => {
+  try {
+    await UsersModel.updateOne({ name: req.params.userName }, { $set: { notifications: [] } });
+    res.json({ success: true, message: "Notifications cleared" });
+  } catch (error) {
+    console.error("Error clearing notifications:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+const generateGoogleMeetLink = () => {
+  return "https://meet.google.com/new"; // This redirects to a new Google Meet session.
+};
+
+app.post("/accept-request/:mentorId/:username", async (req, res) => {
+  const { mentorId, username } = req.params;
+
+  try {
+    const mentor = await Mentor.findById(mentorId);
+    if (!mentor) return res.status(404).json({ message: "Mentor not found" });
+
+    const request = mentor.requests.find((req) => req.name === username);
+    if (!request) return res.status(404).json({ message: "Request not found" });
+
+    // ✅ Generate Google Meet Link
+    const meetLink = generateGoogleMeetLink();
+    request.status = "Accepted";
+    request.meetLink = meetLink;
+
+    await mentor.save();
+
+    // ✅ Notify User
+    const user = await UsersModel.findOne({ name: username });
+    if (user) {
+      user.notifications.push({
+  message: `Your mentor ${mentor.name} has accepted your request. Join - ${meetLink}`,
+});
+
+      await user.save();
+    }
+
+    res.json({ message: "Request accepted successfully", meetLink });
+  } catch (error) {
+    console.error("❌ Error in /accept-request:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
 
 
 

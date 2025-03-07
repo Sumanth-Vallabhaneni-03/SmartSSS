@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import axios from "axios";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaCreditCard, FaVideo, FaWhatsapp } from "react-icons/fa";
 import "./Mentors.css";
 import { userLoginContext } from "../../contexts/UserLoginStore";
 
@@ -8,8 +8,9 @@ const Mentors = () => {
   const [mentors, setMentors] = useState([]);
   const [requestedMentors, setRequestedMentors] = useState(new Set());
   const [searchTerm, setSearchTerm] = useState("");
+  const [visibleRequests, setVisibleRequests] = useState(null);
+  const [loading, setLoading] = useState({});
   const { currentUser } = useContext(userLoginContext);
-  const [userData, setUserData] = useState({});
 
   useEffect(() => {
     axios
@@ -18,34 +19,18 @@ const Mentors = () => {
       .catch((error) => console.error("Error fetching mentors:", error));
   }, []);
 
-  useEffect(() => {
-    if (currentUser?.email) {
-      axios
-        .get(`http://localhost:3000/getUser?email=${currentUser.email}`)
-        .then((response) => {
-          setUserData(response.data);
-        })
-        .catch((error) => console.error("Error fetching user data:", error));
-    }
-  }, [currentUser]);
-
   const handleSendRequest = async (mentor) => {
-    if (!currentUser || !currentUser.email) {
+    if (!currentUser?.email) {
       alert("Please log in to send a request.");
       return;
     }
 
-    const requestData = {
-      userId: currentUser._id,
-      name: currentUser.name,
-      email: currentUser.email,
-      phone: currentUser.phone || "",
-    };
+    setLoading((prev) => ({ ...prev, [mentor._id]: true }));
 
     try {
       const response = await axios.post(
         `http://localhost:3000/request-mentor/${mentor._id}`,
-        requestData
+        { userId: currentUser._id, name: currentUser.name, email: currentUser.email }
       );
 
       alert(response.data.message);
@@ -53,22 +38,25 @@ const Mentors = () => {
       setMentors((prevMentors) =>
         prevMentors.map((m) =>
           m._id === mentor._id
-            ? { ...m, requests: [...(m.requests || []), requestData] }
+            ? { ...m, requests: [...(m.requests || []), { name: currentUser.name, email: currentUser.email }] }
             : m
         )
       );
     } catch (error) {
       console.error("Error sending request:", error);
       alert("Something went wrong while sending the request.");
+    } finally {
+      setLoading((prev) => ({ ...prev, [mentor._id]: false }));
     }
   };
 
-  const handleAcceptRequest = async (mentorId, userId) => {
+  const handleAcceptRequest = useCallback(async (mentorId, userName) => {
+    if (!mentorId || !userName) return alert("Invalid request.");
+
+    setLoading((prev) => ({ ...prev, [`accept_${mentorId}_${userName}`]: true }));
+
     try {
-      const response = await axios.post(
-        `http://localhost:3000/accept-request`,
-        { mentorId, userId }
-      );
+      const response = await axios.post(`http://localhost:3000/accept-request/${mentorId}/${userName}`);
       alert(response.data.message);
       setMentors((prevMentors) =>
         prevMentors.map((mentor) =>
@@ -76,7 +64,7 @@ const Mentors = () => {
             ? {
                 ...mentor,
                 requests: mentor.requests.map((req) =>
-                  req.userId === userId ? { ...req, status: "Accepted" } : req
+                  req.name === userName ? { ...req, status: "Accepted", meetLink: response.data.meetingLink } : req
                 ),
               }
             : mentor
@@ -85,12 +73,16 @@ const Mentors = () => {
     } catch (error) {
       console.error("Error accepting request:", error);
       alert("Failed to accept request.");
+    } finally {
+      setLoading((prev) => ({ ...prev, [`accept_${mentorId}_${userName}`]: false }));
     }
-  };
+  }, []);
+
+  const handleVideoCall = () => window.open("https://meet.google.com/", "_blank");
+  const handlePayment = () => window.open("https://payment-w9ad.onrender.com/", "_blank");
 
   return (
     <div className="container mt-2">
-      <h2 className="text-center mb-4">Mentors</h2>
       <div className="search-bar mb-4 text-center position-relative">
         <input
           type="text"
@@ -103,46 +95,77 @@ const Mentors = () => {
       </div>
 
       <div className="row">
-        {mentors.map((mentor) => (
-          <div key={mentor._id} className="col-md-4 mb-4">
-            <div className="card shadow-lg">
-              <img src={mentor.image} alt={mentor.name} className="card-img-top" style={{ height: "200px", objectFit: "cover" }} />
-              <div className="card-body">
-                <h5 className="card-title">{mentor.name}</h5>
-                <p className="card-text"><strong>Subjects:</strong> {mentor.subjects}</p>
-                <button
-                  onClick={() => handleSendRequest(mentor)}
-                  className="btn btn-danger me-4"
-                  disabled={requestedMentors.has(mentor._id)}
-                >
-                  {requestedMentors.has(mentor._id) ? "Request Sent" : "Send Request"}
-                </button>
-                <h6 className="mt-4">Requests Received:</h6>
-                {mentor.requests && mentor.requests.length > 0 ? (
-                  <ul className="list-group">
-                    {mentor.requests.map((request) => (
-                      <li key={request.userId} className="list-group-item">
-                        {request.name} ({request.email}) - {request.phone}
-                        {request.status === "Accepted" ? (
-                          <span className="text-success ms-2">(Accepted)</span>
-                        ) : (
-                          <button
-                            onClick={() => handleAcceptRequest(mentor._id, request.userId)}
-                            className="btn btn-success btn-sm ms-2"
-                          >
-                            Accept
-                          </button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No requests yet.</p>
-                )}
+        {mentors
+          .filter((mentor) =>
+            mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            mentor.subjects.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+          .map((mentor) => (
+            <div key={mentor._id} className="col-md-4 mb-4">
+              <div className="card shadow-lg">
+                <img src={mentor.image} alt={mentor.name} className="card-img-top" style={{ height: "200px", objectFit: "cover" }} />
+                <div className="card-body">
+                  <h5 className="card-title">{mentor.name}</h5>
+                  <p className="card-text"><strong>Subjects:</strong> {mentor.subjects}</p>
+
+                  {currentUser?.name !== mentor.name && (
+                    <div className="d-flex flex-wrap gap-2">
+                      <button onClick={() => window.open(`https://wa.me/${mentor.number}`, "_blank")} className="btn btn-success">
+                        <FaWhatsapp className="me-2"/>Chat
+                      </button>
+                      <button onClick={handleVideoCall} className="btn btn-primary">
+                        <FaVideo className="me-2" />Meet
+                      </button>
+                      <button onClick={handlePayment} className="btn btn-warning">
+                        <FaCreditCard className="me-2" />Pay
+                      </button>
+                    </div>
+                  )}
+
+                  {currentUser?.name !== mentor.name ? (
+                    <button
+                      onClick={() => handleSendRequest(mentor)}
+                      className="btn btn-danger mt-2 w-100"
+                      disabled={requestedMentors.has(mentor._id) || loading[mentor._id]}
+                    >
+                      {loading[mentor._id] ? "Sending..." : requestedMentors.has(mentor._id) ? "Request Sent" : "Send Request"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setVisibleRequests((prev) => (prev === mentor._id ? null : mentor._id))}
+                      className="btn btn-info mt-2 w-100"
+                    >
+                      {visibleRequests === mentor._id ? "Hide Requests" : "View Requests"}
+                    </button>
+                  )}
+
+                  {visibleRequests === mentor._id && (
+                    <>
+                      <h6 className="mt-4">Requests Received:</h6>
+                      {mentor.requests?.length > 0 ? (
+                        <ul className="list-group">
+                          {mentor.requests.map((request) => (
+                            <li key={request.name} className="list-group-item">
+                              {request.name} ({request.email})
+                              {request.status === "Accepted" ? (
+                                <span className="text-success ms-2">(Accepted)</span>
+                              ) : (
+                                <button onClick={() => handleAcceptRequest(mentor._id, request.name)} className="btn btn-success btn-sm ms-2">
+                                  Accept
+                                </button>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No requests received.</p>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );

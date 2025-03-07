@@ -9,6 +9,12 @@ const usersSchema = new mongoose.Schema({
   subjectsInterested: { type: [String], default: [] },
   createdAt: { type: Date, default: Date.now },
   lastLogin: { type: Date, default: null },
+  notifications: [
+    {
+      message: String,
+      timestamp: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 const UsersModel = mongoose.model("users", usersSchema);
