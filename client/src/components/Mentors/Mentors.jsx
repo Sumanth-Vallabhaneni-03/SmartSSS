@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import axios from "axios";
 import { FaSearch, FaCreditCard, FaVideo, FaWhatsapp } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Make sure CSS is imported
 import "./Mentors.css";
 import { userLoginContext } from "../../contexts/UserLoginStore";
 
@@ -16,12 +18,12 @@ const Mentors = () => {
     axios
       .get("http://localhost:3000/mentors")
       .then((response) => setMentors(response.data))
-      .catch((error) => console.error("Error fetching mentors:", error));
+      .catch(() => toast.error("Error fetching mentors!", { autoClose: 5000 }));
   }, []);
 
   const handleSendRequest = async (mentor) => {
     if (!currentUser?.email) {
-      alert("Please log in to send a request.");
+      toast.warn("Please log in to send a request.", { autoClose: 5000 });
       return;
     }
 
@@ -33,7 +35,7 @@ const Mentors = () => {
         { userId: currentUser._id, name: currentUser.name, email: currentUser.email }
       );
 
-      alert(response.data.message);
+      toast.success(response.data.message, { autoClose: 5000 });
       setRequestedMentors((prev) => new Set([...prev, mentor._id]));
       setMentors((prevMentors) =>
         prevMentors.map((m) =>
@@ -42,22 +44,21 @@ const Mentors = () => {
             : m
         )
       );
-    } catch (error) {
-      console.error("Error sending request:", error);
-      alert("Something went wrong while sending the request.");
+    } catch {
+      toast.error("Something went wrong while sending the request.", { autoClose: 5000 });
     } finally {
       setLoading((prev) => ({ ...prev, [mentor._id]: false }));
     }
   };
 
   const handleAcceptRequest = useCallback(async (mentorId, userName) => {
-    if (!mentorId || !userName) return alert("Invalid request.");
+    if (!mentorId || !userName) return toast.warn("Invalid request.", { autoClose: 5000 });
 
     setLoading((prev) => ({ ...prev, [`accept_${mentorId}_${userName}`]: true }));
 
     try {
       const response = await axios.post(`http://localhost:3000/accept-request/${mentorId}/${userName}`);
-      alert(response.data.message);
+      toast.success(response.data.message, { autoClose: 5000 });
       setMentors((prevMentors) =>
         prevMentors.map((mentor) =>
           mentor._id === mentorId
@@ -70,16 +71,12 @@ const Mentors = () => {
             : mentor
         )
       );
-    } catch (error) {
-      console.error("Error accepting request:", error);
-      alert("Failed to accept request.");
+    } catch {
+      toast.error("Failed to accept request.", { autoClose: 5000 });
     } finally {
       setLoading((prev) => ({ ...prev, [`accept_${mentorId}_${userName}`]: false }));
     }
   }, []);
-
-  const handleVideoCall = () => window.open("https://meet.google.com/", "_blank");
-  const handlePayment = () => window.open("https://payment-w9ad.onrender.com/", "_blank");
 
   return (
     <div className="container mt-2">
@@ -113,10 +110,10 @@ const Mentors = () => {
                       <button onClick={() => window.open(`https://wa.me/${mentor.number}`, "_blank")} className="btn btn-success">
                         <FaWhatsapp className="me-2"/>Chat
                       </button>
-                      <button onClick={handleVideoCall} className="btn btn-primary">
+                      <button className="btn btn-primary">
                         <FaVideo className="me-2" />Meet
                       </button>
-                      <button onClick={handlePayment} className="btn btn-warning">
+                      <button className="btn btn-warning">
                         <FaCreditCard className="me-2" />Pay
                       </button>
                     </div>
@@ -167,6 +164,9 @@ const Mentors = () => {
             </div>
           ))}
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 };
