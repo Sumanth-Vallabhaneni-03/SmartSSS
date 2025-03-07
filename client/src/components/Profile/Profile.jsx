@@ -1,10 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { userLoginContext } from "../../contexts/UserLoginStore"; 
+import { useNavigate } from 'react-router-dom';
 import "./Profile.css";
 
 const Profile = () => {
   const { currentUser, setCurrentUser } = useContext(userLoginContext);
+  const navigate = useNavigate();
 
   // State variables for user profile
   const [userData, setUserData] = useState({
@@ -59,6 +61,14 @@ const Profile = () => {
     }
   };
 
+  // Handle Logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setCurrentUser(null); // Clear the current user in context
+    alert("Logged out successfully!");
+    navigate('/login'); // Redirect to login page after logout
+  };
+
   return (
     <div className="profile-container">
       <h2 className="ph2">👤 Profile</h2>
@@ -94,6 +104,9 @@ const Profile = () => {
       />
 
       <button className="profile-button" onClick={handleSave}>Save Changes</button>
+
+      {/* Logout Button */}
+      <button className="profile-button logout-button" onClick={handleLogout}>Logout</button>
     </div>
   );
 };
