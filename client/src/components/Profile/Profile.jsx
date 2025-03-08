@@ -23,7 +23,7 @@ const Profile = () => {
   useEffect(() => {
     if (currentUser?.email) {
       console.log("📡 Fetching user data from DB...");
-      axios.get(`http://localhost:3000/getUser?email=${currentUser.email}`)
+      axios.get(`https://smart-sss.vercel.app/getUser?email=${currentUser.email}`)
         .then((response) => {
           console.log("✅ User data fetched:", response.data);
           setUserData({
@@ -45,7 +45,7 @@ const Profile = () => {
     console.log("📝 Saving updated profile:", userData);
 
     try {
-      const response = await axios.put("http://localhost:3000/updateProfile", {
+      const response = await axios.put("https://smart-sss.vercel.app/updateProfile", {
         email: userData.email,
         phone: userData.phone,
         address: userData.address,

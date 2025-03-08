@@ -81,7 +81,7 @@ function Home() {
       if (!currentUser) return; // Ensure user exists before API call
 
       try {
-        const response = await axios.get(`http://localhost:3000/check-mentor/${currentUser.name}`);
+        const response = await axios.get(`https://smart-sss.vercel.app/check-mentor/${currentUser.name}`);
         setIsMentor(response.data.isMentor);
       } catch (error) {
         console.error("Error checking mentor status:", error);
@@ -96,7 +96,7 @@ function Home() {
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const response = await axios.post("http://localhost:3000/add-mentor", mentorData);
+    const response = await axios.post("https://smart-sss.vercel.app/add-mentor", mentorData);
 
     setShow(false);
     setMentorData({ name: "", image: "", subjects: "", charge: "", phone: "" });
@@ -124,7 +124,7 @@ const handleFileUpload = (event) => {
    const handleDeleteMentor = async () => {
     try {
       // Make DELETE request to the backend to remove the mentor
-      await axios.delete(`http://localhost:3000/mentors/${currentUser.name}`);
+      await axios.delete(`https://smart-sss.vercel.app/mentors/${currentUser.name}`);
       
       alert('Successfully deleted mentor!');
     

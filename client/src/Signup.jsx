@@ -48,7 +48,7 @@ const Signup = () => {
     if (!validate()) return;
 
     try {
-      const { data } = await axios.post("http://localhost:3000/", formData);
+      const { data } = await axios.post("https://smart-sss.vercel.app/", formData);
       toast.success("Registration successful! Redirecting...");
       setTimeout(() => navigate("/login"), 1000);
     } catch (err) {
