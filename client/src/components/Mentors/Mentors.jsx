@@ -110,10 +110,10 @@ const Mentors = () => {
                       <button onClick={() => window.open(`https://wa.me/${mentor.number}`, "_blank")} className="btn btn-success">
                         <FaWhatsapp className="me-2"/>Chat
                       </button>
-                      <button className="btn btn-primary">
+                      <button onClick={() => window.open(`https://meet.google.com/landing`, "_blank")} className="btn btn-primary">
                         <FaVideo className="me-2" />Meet
                       </button>
-                      <button className="btn btn-warning">
+                      <button onClick={() => window.open(`https://payment-w9ad.onrender.com`, "_blank")} className="btn btn-warning">
                         <FaCreditCard className="me-2" />Pay
                       </button>
                     </div>
