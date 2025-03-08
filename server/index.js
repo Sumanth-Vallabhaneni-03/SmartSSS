@@ -7,9 +7,12 @@ const jwt = require("jsonwebtoken");
 const UsersModel = require("./models/users");
 const Mentor = require("./models/mentors");
 
+
 const app = express();
-app.use(express.json());
 app.use(cors());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
 
 const mongoURI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
@@ -221,6 +224,45 @@ app.post("/accept-request/:mentorId/:username", async (req, res) => {
   } catch (error) {
     console.error("❌ Error in /accept-request:", error);
     res.status(500).json({ message: "Server error", error });
+  }
+});
+
+
+
+// Fetch mentor with the highest requests count
+app.get("/best-mentor", async (req, res) => {
+  try {
+    const bestMentor = await Mentor.find()
+      .sort({ requests: -1 }) // Sort in descending order by requests array length
+      .limit(1);
+
+    if (bestMentor.length > 0) {
+      res.status(200).json(bestMentor[0]);
+    } else {
+      res.status(404).json({ message: "No mentors found" });
+    }
+  } catch (error) {
+    console.error("Error fetching best mentor:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// DELETE route to remove a mentor
+app.delete('/mentors/:name', async (req, res) => {
+  const { name } = req.params;  // Extract mentor name from URL params
+
+  try {
+    // Find and delete the mentor by name
+    const mentor = await Mentor.findOneAndDelete({ name });
+
+    if (!mentor) {
+      return res.status(404).json({ error: "Mentor not found" });
+    }
+
+    res.status(200).json({ message: "Mentor deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting mentor:", error);
+    res.status(500).json({ error: "Failed to delete mentor" });
   }
 });
 

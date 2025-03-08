@@ -151,6 +151,28 @@ p {
 .login-text a:hover {
   text-decoration: underline;
 }
+.form-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-group input {
+  width: 100%;
+  padding-right: 40px; /* Space for the eye icon */
+}
+
+.eye-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: gray;
+}
+
 
 /* Animation */
 @keyframes fadeIn {

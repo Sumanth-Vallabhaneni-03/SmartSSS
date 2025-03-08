@@ -10,6 +10,8 @@ import steppp from "../../assets/steppp.png"
 import  Faq from '../../components/FAQ/Faq';
 import Books from '../../components/Books/Books';
 import Notifications from "../../components/Notifications/Notifications";
+import {  ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Make sure CSS is imported
 import axios from "axios";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,9 +19,13 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { userLoginContext } from "../../contexts/UserLoginStore"; // Correct path
+import BestMentor from "../../components/BestMentor/BestMentor"
+import { MdPersonRemove } from 'react-icons/md';
+
 
 
 function Home() {
+  const [mentors, setMentors] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
     // Function to animate numbers
@@ -68,7 +74,7 @@ function Home() {
   const { currentUser } = useContext(userLoginContext);
   const [isMentor, setIsMentor] = useState(false);
   const [show, setShow] = useState(false);
-  const [mentorData, setMentorData] = useState({ name: "", image: "", subjects: "", charge: "",phone:"" });
+  const [mentorData, setMentorData] = useState({ name: currentUser.name, image: "", subjects: "", charge: "",phone:"" });
 
   useEffect(() => {
     const checkMentorStatus = async () => {
@@ -103,6 +109,35 @@ const handleSubmit = async (e) => {
   }
 };
 
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setMentorData({ ...mentorData, image: reader.result }); // Store Base64 string
+    };
+  }
+};
+
+   // Handle delete mentor
+   const handleDeleteMentor = async () => {
+    try {
+      // Make DELETE request to the backend to remove the mentor
+      await axios.delete(`http://localhost:3000/mentors/${currentUser.name}`);
+      
+      alert('Successfully deleted mentor!');
+    
+      // Option 2: Update UI state
+      // If you are managing the list of mentors, you could update the UI
+      setMentors(mentors.filter(mentor => mentor.name !== currentUser.name));
+    } catch (error) {
+      console.error('Error deleting mentor:', error);
+      alert('Failed to delete mentor.');
+    }
+  };
+  
+  
 
 
   return (
@@ -116,19 +151,25 @@ const handleSubmit = async (e) => {
   </div>
   <Notifications />
   
-  {/* ✅ Add Mentor Button (Only if user is NOT a mentor) */}
-  {!isMentor && currentUser && (
-    <div className="text-end mb-4">
+  {/* ✅ Toggle Button (Add/Delete Mentor) */}
+{currentUser && (
+  <div className="text-end mb-4">
+    {!isMentor ? (
       <button className="btn btn-success" onClick={() => setShow(true)}>
         <MdPersonAdd className="me-2" /> Add me as Mentor
       </button>
-    </div>
-  )}
+    ) : (
+      <button className="btn btn-danger" onClick={handleDeleteMentor}>
+        <MdPersonRemove className="me-2" /> Delete me as Mentor
+      </button>
+    )}
+  </div>
+)}
 </div>
     <br />
    
 
-
+     <ToastContainer />
       {/* ✅ Mentor Form Modal */}
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
@@ -138,13 +179,20 @@ const handleSubmit = async (e) => {
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Name</Form.Label>
-              <Form.Control type="text" name="name" value={mentorData.name} onChange={handleChange} required />
+              <Form.Control type="text" name="name" value={currentUser.name} onChange={handleChange}  static />
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Image URL</Form.Label>
-              <Form.Control type="text" name="image" value={mentorData.image} onChange={handleChange} required />
-            </Form.Group>
+  <Form.Label>Upload Image</Form.Label>
+  <Form.Control 
+    type="file" 
+    accept="image/*" 
+    onChange={handleFileUpload} 
+    required 
+  />
+  {mentorData.image && <img src={mentorData.image} alt="Preview" className="preview-image" />}
+</Form.Group>
+
 
             <Form.Group className="mb-3">
               <Form.Label>Subjects Interested</Form.Label>
@@ -192,22 +240,18 @@ const handleSubmit = async (e) => {
         <div className="col-sm-5 m-4">
           <div className="">
             <div className="">
-              <Carousel interval={2000} controls={true} indicators={true} pause="hover">
+              <Carousel interval={1500} controls={true} indicators={true} pause="hover">
                 <Carousel.Item>
                   <img className="d-block w-100" src="https://cdn.prod.website-files.com/5d26256b528d2e079bc08d82/622f3b0c4423ac76de1bc765_16.png" alt="First slide" />
                 </Carousel.Item>
                 <Carousel.Item>
                   <img className="d-block w-100" src="https://cdn.prod.website-files.com/5d26256b528d2e079bc08d82/618e8bfbb4373c842a1c74cf_Untitled%20design%20(10).png" alt="Second slide" />
                 </Carousel.Item>
-                <Carousel.Item>
-                  <img className="d-block w-100" src="https://www.sfgmentornet.com/wp-content/uploads/2022/05/2.png" alt="Third slide" />
-                </Carousel.Item>
               </Carousel>
             </div>
           </div>
         </div>
       </div>
-
      
     
       <div className="stats-container">
@@ -226,10 +270,6 @@ const handleSubmit = async (e) => {
         </div>
       </div>
     </div>
-
-
-      
-      
 
       {/* Features Section */}
       <br />
@@ -303,8 +343,9 @@ const handleSubmit = async (e) => {
 </div>
 <br/>
           <Faq/>
-
-          <Books/>
+          <BestMentor /> {/* Displaying the BestMentor component here */}
+          <Books/><br/>
+          
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 import './Header.css';
 import { FaHome, FaQuestionCircle, FaUserTie, FaUserAlt } from "react-icons/fa";
 import { MdOutlineFeaturedPlayList } from "react-icons/md";
@@ -7,13 +9,27 @@ import { IoMdBook } from 'react-icons/io';
 import logo from '../../assets/logo.png';
 
 function Header() {
-  const navigate = useNavigate(); // Initialize navigate for redirection
+  const navigate = useNavigate();
 
   // Handle Logout
   const handleLogout = () => {
     localStorage.removeItem("token"); // Remove token from localStorage
-    alert("Logged out successfully!"); // Alert the user
-    navigate('/login'); // Redirect to login page after logout
+    
+    // Show Toast Notification
+    toast.success("Logged out successfully!", {
+      position: "top-right",
+      autoClose: 2000, // Hide after 2 seconds
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+    });
+
+    // Redirect to login after a short delay
+    setTimeout(() => {
+      navigate('/login');
+    }, 2000);
   };
 
   return (

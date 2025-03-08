@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import { Eye, EyeOff } from "lucide-react"; // Import Lucide icons
 import "react-toastify/dist/ReactToastify.css";
 import "./Signup.css";
 
@@ -15,6 +16,8 @@ const Signup = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const validate = () => {
@@ -56,8 +59,8 @@ const Signup = () => {
 
   return (
     <section className="signup-section">
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar /><br/>
-      <div className="signup-navbar">Welcome to SmartBridge</div><br/><br/>
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar /><br />
+      <div className="signup-navbar">Welcome to SmartBridge</div><br /><br />
       <div className="signup-container">
         <h1 className="signup-title">Create an Account</h1>
         <form onSubmit={handleSubmit}>
@@ -87,29 +90,43 @@ const Signup = () => {
             {errors.email && <p className="error-text">{errors.email}</p>}
           </div>
 
-          <div className="form-group">
+          <div className="form-group relative">
             <i className="fas fa-lock"></i>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
               className={`form-control ${errors.password ? "input-error" : ""}`}
               value={formData.password}
               onChange={handleChange}
             />
+            <button
+              type="button"
+              className="eye-button"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
             {errors.password && <p className="error-text">{errors.password}</p>}
           </div>
 
-          <div className="form-group">
+          <div className="form-group relative">
             <i className="fas fa-key"></i>
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               placeholder="Confirm Password"
               className={`form-control ${errors.confirmPassword ? "input-error" : ""}`}
               value={formData.confirmPassword}
               onChange={handleChange}
             />
+            <button
+              type="button"
+              className="eye-button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
             {errors.confirmPassword && <p className="error-text">{errors.confirmPassword}</p>}
           </div>
 
@@ -123,7 +140,7 @@ const Signup = () => {
 
           <button type="submit" className="submit-button">Sign Up</button>
         </form>
-     
+
         <p className="login-text">
           Already have an account? <Link to="/login">Log in</Link>
         </p>

@@ -1,0 +1,145 @@
+.best-mentor-container {
+    font-family: 'Arial', sans-serif;
+    margin: 20px auto;
+    padding: 20px;
+    width: 800px;
+    background: linear-gradient(to right,  #1a2b4d,#164f89);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .best-mentor-container h2 {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 20px;
+  }
+  
+  .best-mentor-details {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 100%;
+    width: 300px;
+    position:relative;
+    left:220px;
+  }
+  
+  .best-mentor-details img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+  }
+  
+  .best-mentor-details img:hover {
+    transform: scale(1.05);
+  }
+  
+  .best-mentor-details h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .best-mentor-details p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 5px;
+  }
+  
+  .best-mentor-details p strong {
+    color: #4A90E2;
+  }
+  
+  /* 👑 Crown Icon Styling */
+  .crown-icon {
+    margin-bottom: 10px;
+    animation: crownFloat 1s infinite alternate ease-in-out;
+  }
+  
+  /* 🎉 Congrats Message Styling */
+  .congrats-box {
+    margin-top: 15px;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #4A90E2, #82B1FF);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    text-align: center;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  
+  /* 🎊 Animation for Floating Crown */
+  @keyframes crownFloat {
+    from {
+      transform: translateY(-5px);
+    }
+    to {
+      transform: translateY(5px);
+    }
+  }
+  
+  /* ✨ Fade-in Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .best-mentor-container {
+      margin: 15px;
+    }
+  
+    .best-mentor-details {
+      width: 90%;
+    }
+  
+    .best-mentor-details h3 {
+      font-size: 1.3rem;
+    }
+  
+    .best-mentor-details p {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .best-mentor-container {
+      padding: 15px;
+    }
+  
+    .best-mentor-details {
+      width: 100%;
+    }
+  
+    .best-mentor-details h3 {
+      font-size: 1.2rem;
+    }
+  
+    .best-mentor-details p {
+      font-size: 0.85rem;
+    }
+  
+    .congrats-box {
+      font-size: 1rem;
+      padding: 8px 12px;
+    }
+  }
+  
