@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./AboutUs.css";
+import "./Aboutus.css";
 import flow from '../../assets/flow.png';
 
 const AboutUs = () => {
