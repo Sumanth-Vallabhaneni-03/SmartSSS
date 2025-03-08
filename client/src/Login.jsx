@@ -24,7 +24,7 @@ const Login = () => {
         console.log(result.data.user);
         toast.success("Login successful! Redirecting...");
 
-        setTimeout(() => navigate("/dashboard"), 2000);
+        setTimeout(() => navigate("/dashboard"), 1000);
       } else {
         toast.error(result.data.error || "Login failed!");
       }
@@ -35,10 +35,11 @@ const Login = () => {
   };
 
   return (
-    <div className="background">
-      <div className="navbar">Welcome to SmartBridge</div>
+    <div className="background"><br/>
+     <ToastContainer position="top-right" autoClose={2000} hideProgressBar />
+      <div className="login-navbar">Welcome to SmartBridge</div><br/><br/><br/>
       <div className="login-container">
-        <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
+       
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
           <div className="form-group">

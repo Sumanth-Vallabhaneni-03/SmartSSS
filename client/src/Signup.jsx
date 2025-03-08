@@ -45,9 +45,9 @@ const Signup = () => {
     if (!validate()) return;
 
     try {
-      const { data } = await axios.post("http://localhost:3000/signup", formData);
+      const { data } = await axios.post("http://localhost:3000/", formData);
       toast.success("Registration successful! Redirecting...");
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => navigate("/login"), 1000);
     } catch (err) {
       console.error("Registration error:", err);
       toast.error(err.response?.data?.message || "Something went wrong. Please try again.");
@@ -56,8 +56,8 @@ const Signup = () => {
 
   return (
     <section className="signup-section">
-      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
-
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar /><br/>
+      <div className="signup-navbar">Welcome to SmartBridge</div><br/><br/>
       <div className="signup-container">
         <h1 className="signup-title">Create an Account</h1>
         <form onSubmit={handleSubmit}>
@@ -123,7 +123,7 @@ const Signup = () => {
 
           <button type="submit" className="submit-button">Sign Up</button>
         </form>
-        <br/>
+     
         <p className="login-text">
           Already have an account? <Link to="/login">Log in</Link>
         </p>

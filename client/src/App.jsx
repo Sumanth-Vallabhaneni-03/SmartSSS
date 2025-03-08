@@ -9,6 +9,7 @@ import Profile from "./components/Profile/Profile"; // Import Profile
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+
 function App() {
   return (
     <Routes>

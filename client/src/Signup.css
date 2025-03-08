@@ -1,64 +1,132 @@
-.signup-section {
-  height: 620px;
-  width:600px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+General Styling
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+body {
+  background: linear-gradient(100deg, #f3f3f4, #c8d4ed);
+}
+
+/* Glassmorphism Container */
 .signup-container {
-  width: 350px;
-  background: #f8f9fa;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.signup-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.signup-title {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
+  width: 100%;
   position: relative;
+  left:450px;
+  width: 350px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.form-group i {
-  font-size: 18px;
-  margin-right: 10px;
-  color: #007bff;
-  transition: color 0.3s ease;
+/* Heading */
+.signup-title {
+  font-size: 26px;
+  color: rgb(11, 8, 8);
+  font-weight: 700;
+  margin-bottom: 25px;
+  animation: fadeIn 1s ease-out;
 }
 
-.form-group i:hover {
-  color: #0056b3;
+/* Input Fields */
+.form-group {
+  margin-bottom: 20px;
 }
 
 .form-control {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  transition: border-color 0.3s ease;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .form-control:focus {
-  border-color: #007bff;
-  outline: none;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
+.input-error {
+  border: 1px solid red;
+}
+
+/* Error Text */
+.error-text {
+  color: red;
+  font-size: 12px;
+  text-align: left;
+  margin-top: 5px;
+}
+
+/* Buttons */
+.submit-button {
+  width: 80%;
+  padding: 5px;
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: linear-gradient(90deg, #4167ff, #522bff);
+  color: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.submit-button:hover {
+  background: linear-gradient(90deg, #1b1616, #0d0c0c);
+  transform: scale(1.05);
+}
+
+.submit-button:active {
+  transform: scale(1);
+}
+
+/* Sign-up Section */
+p {
+  margin-top: 12px;
+  color: rgb(24, 22, 22);
+  font-size: 15px;
+}
+
+.signup-btn {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.signup-navbar {
+
+  font-weight: 600;
+  font-size: 30px;
+  color: #17085a;
+}
+
+.signup-btn:hover {
+  background: white;
+  color: #ff416c;
+}
+
+/* Terms and Conditions */
 .checkbox-group {
   display: flex;
   justify-content: center;
@@ -70,28 +138,33 @@
   margin-right: 6px;
 }
 
-.submit-button {
-  width: 80%;
-  background-color: #007bff;
-  color: white;
-  padding: 8px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
+.login-text {
   text-align: center;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-top: 15px;
 }
 
-.submit-button:hover {
-  background-color: #0e0f10;
-  transform: scale(1.05);
+.login-text a {
+  color: #007bff;
+  text-decoration: none;
 }
 
-.submit-button:active {
-  transform: scale(1);
+.login-text a:hover {
+  text-decoration: underline;
 }
 
+/* Animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 600px) {
   .signup-container {
     padding: 15px;
