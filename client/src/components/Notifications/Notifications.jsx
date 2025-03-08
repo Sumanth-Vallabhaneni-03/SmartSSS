@@ -14,7 +14,7 @@ const Notifications = () => {
       if (currentUser) {
         try {
           const encodedName = encodeURIComponent(currentUser.name);
-          const response = await axios.get(`https://smart-sss.vercel.app/notifications/${encodedName}`);
+          const response = await axios.get(`http://localhost:3000/notifications/${encodedName}`);
           setNotifications(response.data.notifications);
         } catch (error) {
           console.error("Error fetching notifications:", error);
@@ -31,7 +31,7 @@ const Notifications = () => {
 
       // ✅ Optional: Clear notifications in the backend
       try {
-        await axios.post(`https://smart-sss.vercel.app/clear-notifications/${currentUser.name}`);
+        await axios.post(`http://localhost:3000/clear-notifications/${currentUser.name}`);
       } catch (error) {
         console.error("Error clearing notifications:", error);
       }

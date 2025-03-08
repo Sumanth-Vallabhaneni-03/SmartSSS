@@ -1,7 +1,7 @@
 /* Profile Image Styling */
 .card-img-top {
-  width: 200px; /* Smaller icon size */
-  height: 50px; /* Smaller icon size */
+  width: 180px; /* Smaller icon size */
+  height: 20px; /* Smaller icon size */
   object-fit: cover;
   border-radius: 50%; /* Circular shape */
   margin: 10px auto;

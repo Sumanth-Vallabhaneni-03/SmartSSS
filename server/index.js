@@ -7,14 +7,10 @@ const jwt = require("jsonwebtoken");
 const UsersModel = require("./models/users");
 const Mentor = require("./models/mentors");
 
-
 const app = express();
+app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-const express = require("express");
-const cors = require("cors");
-
-
 
 
 const mongoURI = process.env.MONGO_URI;
@@ -61,9 +57,6 @@ app.post("/", async (req, res) => {  // 🔥 Changed from `/` to `/register`
 
 });
 
-app.get("/health", (req, res) => {
-    res.send("✅ API connected to MongoDB and running!");
-});
 
 // ✅ FETCH MENTORS
 app.get("/mentors", async (req, res) => {
