@@ -1,10 +1,10 @@
 /* Overall Accordion Styles */
 .accordion {
-    max-width: 900px;
+    width: 600px;
     margin: 20px auto;
     padding: 10px;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    
     overflow: visible !important; /* Ensuring content isn't hidden */
 }
 
@@ -54,7 +54,6 @@
     border-radius: 0 0 8px 8px;
     color: black !important;
     font-size: 15px;
-    
     visibility: visible !important;
 }
 

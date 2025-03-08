@@ -6,11 +6,13 @@ import m from "../../assets/men-removebg-preview.png";
 import help from "../../assets/help-removebg-preview.png";
 import { MdPersonAdd } from "react-icons/md"; 
 import "./Home.css";
-import steps from "../../assets/steps.png";
+import steppp from "../../assets/steppp.png"
 import  Faq from '../../components/FAQ/Faq';
 import Books from '../../components/Books/Books';
 import Notifications from "../../components/Notifications/Notifications";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Modal, Button, Form } from "react-bootstrap"; 
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
@@ -83,45 +85,48 @@ function Home() {
     checkMentorStatus();
   }, [currentUser]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:3000/add-mentor", mentorData);
-      alert(response.data.message);
-      setShow(false);
-      setMentorData({ name: "", image: "", subjects: "", charge: "",phone:"" });
-      setIsMentor(true); // ✅ Hide button after adding
-    } catch (error) {
-      alert("Error adding mentor: " + error.response?.data?.error);
-    }
-  };
+  // Inside your component or wherever your handleSubmit function is:
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await axios.post("http://localhost:3000/add-mentor", mentorData);
+
+    setShow(false);
+    setMentorData({ name: "", image: "", subjects: "", charge: "", phone: "" });
+    setIsMentor(true); // ✅ Hide button after adding
+    
+    // Show success toast
+    toast.success("Mentor added successfully!");
+  } catch (error) {
+    toast.error("Error adding mentor: " + error.response?.data?.error);
+  }
+};
 
 
 
   return (
 
     <div className="container mt-5">
-      {/* ✅ Add Mentor Button */}
-      <div>
-      <Notifications />
-      <h5>{currentUser ? `Hi ${currentUser.name} 👋` : "Welcome Guest!"}</h5> {/* Add the notification bell here */}
-      {currentUser && (
-        <button className="btn btn-success" onClick={() => navigate("/dashboard/profile")}>
-          View Profile
-        </button>
-        
-      )}
+     {/* ✅ Add Mentor Button */}
+<div className="d-flex justify-content-between align-items-center">
+  <div>
+  
+  <h5>{currentUser ? `Hi ${currentUser.name} 👋` : "Welcome Guest!"}</h5> {/* Add the notification bell here */}
+  </div>
+  <Notifications />
+  
+  {/* ✅ Add Mentor Button (Only if user is NOT a mentor) */}
+  {!isMentor && currentUser && (
+    <div className="text-end mb-4">
+      <button className="btn btn-success" onClick={() => setShow(true)}>
+        <MdPersonAdd className="me-2" /> Add me as Mentor
+      </button>
     </div>
-
+  )}
+</div>
     <br />
-   {/* ✅ Add Mentor Button (Only if user is NOT a mentor) */}
-   {!isMentor && currentUser && (
-        <div className="text-center mb-4">
-          <button className="btn btn-success" onClick={() => setShow(true)}>
-            <MdPersonAdd className="me-2" /> Add me as Mentor
-          </button>
-        </div>
-      )}
+   
 
 
       {/* ✅ Mentor Form Modal */}
@@ -227,7 +232,7 @@ function Home() {
       
 
       {/* Features Section */}
-      <br /><br />
+      <br />
       <div id="features" className="text-center">
         <h2 className="card-title" style={{ color: "rgb(30, 83, 136)" }}>Features</h2>
         <h3 className="card-text text-blue">What you can do by signing up to the platform here?</h3>
@@ -246,7 +251,7 @@ function Home() {
             { title: "Enhance Skills with Industry Experts", text: "Elevate your skills and knowledge by learning directly from industry experts." }
           ].map((feature, index) => (
             <div className="col-sm-6 mb-4" key={index}>
-              <div className="card"  style={{ boxShadow: "0 4px 8px rgba(0, 0, 139, 0.5)" }}>
+              <div className="card"  style={{ boxShadow: "0 4px 8px rgba(20, 20, 22, 0.5)" }}>
                 <div className="card-body first">
                   <h2 className="card-title" style={{ color: "rgb(30, 83, 136)" }}>{feature.title}</h2>
                   <br />
@@ -281,7 +286,7 @@ function Home() {
           />
         </div>
       </div>
-          <br /><br />   <br /><br />
+          <br /><br /> 
       <div id="steps" className="text-center">
         <h2 className="" style={{ color: "rgb(30, 83, 136)" }}>Steps</h2>
         <h3 className="">What are the steps to Follow?</h3>
@@ -290,13 +295,13 @@ function Home() {
     <div className="">
   <div className="gud">
     <img
-      src={steps}
+      src={steppp}
       alt="Notebook"
       className="img-fluid"
     />
   </div>
 </div>
-<br/><br/>
+<br/>
           <Faq/>
 
           <Books/>

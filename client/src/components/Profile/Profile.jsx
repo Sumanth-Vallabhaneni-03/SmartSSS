@@ -105,8 +105,7 @@ const Profile = () => {
 
       <button className="profile-button" onClick={handleSave}>Save Changes</button>
 
-      {/* Logout Button */}
-      <button className="profile-button logout-button" onClick={handleLogout}>Logout</button>
+      
     </div>
   );
 };

@@ -105,7 +105,7 @@ const Mentors = () => {
                   <h5 className="card-title">{mentor.name}</h5>
                   <p className="card-text"><strong>Subjects:</strong> {mentor.subjects}</p>
 
-                  {currentUser?.name !== mentor.name && (
+                  {currentUser?.name != mentor.name && (
                     <div className="d-flex flex-wrap gap-2">
                       <button onClick={() => window.open(`https://wa.me/${mentor.number}`, "_blank")} className="btn btn-success">
                         <FaWhatsapp className="me-2"/>Chat

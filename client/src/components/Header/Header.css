@@ -104,3 +104,18 @@
     }
 }
 
+.logout-button {
+    background-color: #ff4d4d; /* Red background */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-left: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .logout-button:hover {
+    background-color: #e60000; /* Darker red on hover */
+  }
+  

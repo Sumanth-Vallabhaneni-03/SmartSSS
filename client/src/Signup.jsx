@@ -116,7 +116,7 @@ const Signup = () => {
           <div className="checkbox-group">
             <input type="checkbox" name="termsAccepted" checked={formData.termsAccepted} onChange={handleChange} />
             <label>
-              I agree to the <a href="#!">Terms of Service</a>
+              I agree to the <a href="https://docs.google.com/document/d/1PHqNw4xWGYibMis0X97Wp2c16mxFVW8U93KR2XwEOfU/edit?tab=t.0" target="_blank" rel="noopener noreferrer">Terms of Service</a>
             </label>
           </div>
           {errors.termsAccepted && <p className="error-text">{errors.termsAccepted}</p>}
