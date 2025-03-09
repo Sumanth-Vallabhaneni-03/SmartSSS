@@ -16,7 +16,7 @@ const Mentors = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/mentors")
+      .get("https://smart-bridge-backend.vercel.app/mentors")
       .then((response) => setMentors(response.data))
       .catch(() => toast.error("Error fetching mentors!", { autoClose: 5000 }));
   }, []);
@@ -31,7 +31,7 @@ const Mentors = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/request-mentor/${mentor._id}`,
+        `https://smart-bridge-backend.vercel.app/request-mentor/${mentor._id}`,
         { userId: currentUser._id, name: currentUser.name, email: currentUser.email }
       );
 
