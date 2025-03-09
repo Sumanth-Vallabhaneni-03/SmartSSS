@@ -81,7 +81,7 @@ function Home() {
       if (!currentUser) return; // Ensure user exists before API call
 
       try {
-        const response = await axios.get(`http://smart-bridge-backend.vercel.app/check-mentor/${currentUser.name}`);
+        const response = await axios.get(`https://smart-bridge-backend.vercel.app/check-mentor/${currentUser.name}`);
         setIsMentor(response.data.isMentor);
       } catch (error) {
         console.error("Error checking mentor status:", error);
@@ -96,7 +96,7 @@ function Home() {
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const response = await axios.post("http://smart-bridge-backend.vercel.app/add-mentor", mentorData);
+    const response = await axios.post("https://smart-bridge-backend.vercel.app/add-mentor", mentorData);
 
     setShow(false);
     setMentorData({ name: "", image: "", subjects: "", charge: "", phone: "" });
@@ -124,7 +124,7 @@ const handleFileUpload = (event) => {
    const handleDeleteMentor = async () => {
     try {
       // Make DELETE request to the backend to remove the mentor
-      await axios.delete(`http://smart-bridge-backend.vercel.app/mentors/${currentUser.name}`);
+      await axios.delete(`https://smart-bridge-backend.vercel.app/mentors/${currentUser.name}`);
       
       alert('Successfully deleted mentor!');
     

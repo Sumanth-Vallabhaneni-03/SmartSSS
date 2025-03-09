@@ -16,7 +16,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const result = await axios.post("http://smart-bridge-backend.vercel.app/login", { email, password });
+      const result = await axios.post("https://smart-bridge-backend.vercel.app/login", { email, password });
 
       if (result.data.token) {
         localStorage.setItem("token", result.data.token);

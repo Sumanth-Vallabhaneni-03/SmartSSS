@@ -15,7 +15,7 @@ function BestMentor() {
   useEffect(() => {
     const fetchBestMentor = async () => {
       try {
-        const response = await axios.get("http://smart-bridge-backend.vercel.app/best-mentor");
+        const response = await axios.get("https://smart-bridge-backend.vercel.app/best-mentor");
         setBestMentor(response.data || null);
       } catch (error) {
         console.error("Error fetching the best mentor:", error);
