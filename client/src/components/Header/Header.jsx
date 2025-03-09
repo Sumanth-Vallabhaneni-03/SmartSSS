@@ -42,32 +42,8 @@ function Header() {
             <FaHome className='fs-5 text-dark' /> Home
           </Link>
         </li>
-        <li>
-          <a 
-            href="#features" 
-            className='nav-link text-white' 
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("features").scrollIntoView({ behavior: "smooth" });
-            }}
-            aria-label="Features"
-          >
-            <MdOutlineFeaturedPlayList className='fs-5 text-dark' /> Features
-          </a>
-        </li>
-        <li>
-          <a 
-            href="#steps" 
-            className='nav-link text-white' 
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("steps").scrollIntoView({ behavior: "smooth" });
-            }}
-            aria-label="Steps"
-          >
-            <IoMdBook className='fs-5 text-dark' /> Steps
-          </a>
-        </li>
+        
+        
         <li>
           <Link to="/dashboard/aboutus" className='nav-link text-white' aria-label="About Us">
             <FaQuestionCircle className='fs-5 text-dark' /> About Us
