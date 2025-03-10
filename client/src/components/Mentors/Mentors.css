@@ -94,3 +94,18 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+.accept-btn {
+  font-size: 10px; /* Reduce font size */
+  padding: 2px 4px; /* Smaller padding */
+  border-radius: 4px; /* Slightly rounded corners */
+  background-color: #28a745; /* Green background */
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.accept-btn:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}

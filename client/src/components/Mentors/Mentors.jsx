@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { FaSearch, FaCreditCard, FaVideo, FaWhatsapp } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Ensure Toastify CSS is imported
+import "react-toastify/dist/ReactToastify.css";
 import "./Mentors.css";
 import { userLoginContext } from "../../contexts/UserLoginStore";
 
@@ -12,6 +12,7 @@ const Mentors = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleRequests, setVisibleRequests] = useState(null);
   const [loading, setLoading] = useState({});
+  const [acceptedRequests, setAcceptedRequests] = useState(new Set());
   const { currentUser } = useContext(userLoginContext);
 
   useEffect(() => {
@@ -51,6 +52,31 @@ const Mentors = () => {
     }
   };
 
+  const handleAcceptRequest = async (mentorId, username) => {
+    try {
+      console.log("📢 Accepting request for:", mentorId, username); // Debug log
+  
+      setAcceptedRequests((prev) => new Set([...prev, `${mentorId}-${username}`]));
+  
+      const response = await fetch(`http://smart-bridge-backend.vercel.app/withaccep/${mentorId}-${username}`, {
+        method: "POST",
+      });
+      
+  
+      const data = await response.json();
+      console.log("📢 Server Response:", data); // Debug log
+  
+      if (response.ok) {
+        toast.success(`Accepted Request.`, { autoClose: 2000 });
+      } else {
+        toast.error(data.message || "Error accepting request");
+      }
+    } catch (error) {
+      console.error("❌ Error accepting request:", error);
+      toast.error("Something went wrong!");
+    }
+  };
+  
   return (
     <div className="container mt-2">
       <div className="search-bar mb-4 text-center position-relative">
@@ -71,7 +97,7 @@ const Mentors = () => {
             mentor.subjects.toLowerCase().includes(searchTerm.toLowerCase())
           )
           .map((mentor) => {
-            const requestCount = mentor.requests?.length || 0; // ✅ Count requests
+            const requestCount = mentor.requests?.length || 0;
             return (
               <div key={mentor._id} className="col-md-4 mb-4">
                 <div className="card shadow-lg">
@@ -80,7 +106,6 @@ const Mentors = () => {
                     <h5 className="card-title">{mentor.name}</h5>
                     <p className="card-text"><strong>Subjects:</strong> {mentor.subjects}</p>
 
-                    {/* ✅ Mentor Progress Report - Show Number of Requests */}
                     <div className="progress mt-2">
                       <div
                         className="progress-bar progress-bar-striped progress-bar-animated bg-success"
@@ -131,10 +156,17 @@ const Mentors = () => {
                         {mentor.requests?.length > 0 ? (
                           <ul className="list-group">
                             {mentor.requests.map((request) => (
-                              <li key={request.name} className="list-group-item">
-                                {request.name} ({request.email})
-                              </li>
-                            ))}
+  <li key={request.name} className="list-group-item d-flex justify-content-between">
+    {request.name} ({request.email})
+    <button
+      onClick={() => handleAcceptRequest(mentor._id, request.name)}
+      className="accept-btn"
+      disabled={acceptedRequests.has(`${mentor._id}-${request.name}`)}
+    >
+      {acceptedRequests.has(`${mentor._id}-${request.name}`) ? "Accepted" : "Accept"}
+    </button>
+  </li>
+))}
                           </ul>
                         ) : (
                           <p>No requests received.</p>
@@ -147,7 +179,6 @@ const Mentors = () => {
             );
           })}
       </div>
-      {/* Toast Container */}
       <ToastContainer />
     </div>
   );

@@ -194,15 +194,27 @@ const generateGoogleMeetLink = () => {
   return "https://meet.google.com/new"; // This redirects to a new Google Meet session.
 };
 
-app.post("/accept-request/:mentorId/:username", async (req, res) => {
+app.post("/withaccep/:mentorId-:username", async (req, res) => {
   const { mentorId, username } = req.params;
+  console.log("🔍 Received Request:", mentorId, username); // Debug log
 
   try {
     const mentor = await Mentor.findById(mentorId);
-    if (!mentor) return res.status(404).json({ message: "Mentor not found" });
+    if (!mentor) {
+      console.error("❌ Mentor not found:", mentorId);
+      return res.status(404).json({ message: "Mentor not found" });
+    }
 
+    console.log("✅ Mentor found:", mentor.name);
+
+    // ✅ Find request by name
     const request = mentor.requests.find((req) => req.name === username);
-    if (!request) return res.status(404).json({ message: "Request not found" });
+    if (!request) {
+      console.error("❌ Request not found for user:", username);
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    console.log("✅ Request found. Processing acceptance...");
 
     // ✅ Generate Google Meet Link
     const meetLink = generateGoogleMeetLink();
@@ -210,24 +222,26 @@ app.post("/accept-request/:mentorId/:username", async (req, res) => {
     request.meetLink = meetLink;
 
     await mentor.save();
+    console.log("✅ Request accepted and saved!");
 
     // ✅ Notify User
     const user = await UsersModel.findOne({ name: username });
     if (user) {
+      console.log("✅ User found. Sending notification...");
       user.notifications.push({
-  message: `Your mentor ${mentor.name} has accepted your request. Join - ${meetLink}`,
-});
-
+        message: `Your mentor ${mentor.name} has accepted your request. Join - ${meetLink}`,
+      });
       await user.save();
+    } else {
+      console.warn("⚠️ User not found:", username);
     }
 
     res.json({ message: "Request accepted successfully", meetLink });
   } catch (error) {
-    console.error("❌ Error in /accept-request:", error);
+    console.error("❌ Error in /withaccep:", error);
     res.status(500).json({ message: "Server error", error });
   }
 });
-
 
 
 // Fetch mentor with the highest requests count
