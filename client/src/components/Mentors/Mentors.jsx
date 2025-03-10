@@ -58,7 +58,7 @@ const Mentors = () => {
   
       setAcceptedRequests((prev) => new Set([...prev, `${mentorId}-${username}`]));
   
-      const response = await fetch(`http://smart-bridge-backend.vercel.app/withaccep/${mentorId}-${username}`, {
+      const response = await fetch(`https://smart-bridge-backend.vercel.app/withaccep/${mentorId}-${username}`, {
         method: "POST",
       });
       
