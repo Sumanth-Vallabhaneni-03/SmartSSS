@@ -67,6 +67,7 @@
 2. **Explore Mentors**: Browse the list of mentors and their specialties. You can search and filter mentors based on interests.
 3. **Add Mentor**: If you wish to mentor others, click on the "Add as Mentor" button and fill out your profile.
 4. **Delete Mentor**: If you decide to remove your mentor status, simply click "Delete Mentor".
+   
 
 ## Contributing
 
@@ -96,12 +97,6 @@ Demo :
 <img width="930" alt="image" src="https://github.com/user-attachments/assets/a0706f50-1675-40b4-b3ed-b35d6d2d05ae" />
 <img width="875" alt="image" src="https://github.com/user-attachments/assets/ca6bed9c-e3fb-4d28-8746-5acf4992be76" />
 <img width="926" alt="image" src="https://github.com/user-attachments/assets/cf1951d7-25cd-458b-818e-3c4fd1781a0b" />
-
-
-
-
-
-
 
 
 
